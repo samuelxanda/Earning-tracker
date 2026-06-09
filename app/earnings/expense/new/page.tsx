@@ -3,11 +3,13 @@
 import { ArrowLeft, DollarSign, Save, FileText, Calendar } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { useAuth } from "@/components/AuthProvider";
 import { createClient } from "@/lib/insforge";
 
 const categories = ["Fuel", "Maintenance", "Insurance", "Phone", "Gear", "Other"];
 
 export default function NewExpensePage() {
+  const { user } = useAuth();
   const [category, setCategory] = useState("");
   const [amount, setAmount] = useState("");
   const [date, setDate] = useState("");
@@ -21,9 +23,11 @@ export default function NewExpensePage() {
     setError(null);
 
     try {
+      if (!user) return;
       const client = createClient();
       await client.database.from("expenses").insert([
         {
+          user_id: user.id,
           category,
           amount: parseFloat(amount),
           date,

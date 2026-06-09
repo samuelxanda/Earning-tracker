@@ -15,6 +15,22 @@ function VerifyForm() {
   const [loading, setLoading] = useState(false);
   const [resent, setResent] = useState(false);
 
+  if (!email) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50">
+        <Card className="w-full max-w-sm">
+          <CardHeader className="text-center">
+            <CardTitle className="text-xl">Missing Email</CardTitle>
+            <CardDescription>No email address found. Please sign up again.</CardDescription>
+          </CardHeader>
+          <CardContent className="text-center">
+            <Button onClick={() => router.push("/auth/sign-up")}>Sign Up</Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   const handleVerify = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -52,7 +68,7 @@ function VerifyForm() {
 
       if (res.ok) setResent(true);
     } catch {
-      // silent
+      setError("Failed to resend code. Try again.");
     }
   };
 

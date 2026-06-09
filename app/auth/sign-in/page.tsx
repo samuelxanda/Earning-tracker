@@ -15,6 +15,11 @@ function SignInForm() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const getSafeRedirect = (param: string | null): string => {
+    if (!param || !param.startsWith("/")) return "/earnings";
+    return param;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -38,7 +43,7 @@ function SignInForm() {
         return;
       }
 
-      const redirect = searchParams.get("redirect") || "/earnings";
+      const redirect = getSafeRedirect(searchParams.get("redirect"));
       router.push(redirect);
     } catch {
       setError("Something went wrong. Try again.");

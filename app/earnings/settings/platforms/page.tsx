@@ -3,6 +3,7 @@
 import { Plus, Edit, Trash2, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState, useCallback } from "react";
+import { useAuth } from "@/components/AuthProvider";
 import { createClient } from "@/lib/insforge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -23,6 +24,7 @@ const presetColors = [
 ];
 
 export default function PlatformsPage() {
+  const { user } = useAuth();
   const [platforms, setPlatforms] = useState<Platform[]>([]);
   const [loading, setLoading] = useState(true);
   const [addOpen, setAddOpen] = useState(false);
@@ -69,14 +71,14 @@ export default function PlatformsPage() {
   };
 
   const handleSave = async () => {
-    if (!formName.trim()) return;
+    if (!formName.trim() || !user) return;
     setSaving(true);
     try {
       const client = createClient();
       if (selectedPlatform) {
         await client.database.from("platforms").update({ name: formName.trim(), color: formColor }).eq("id", selectedPlatform.id);
       } else {
-        await client.database.from("platforms").insert([{ name: formName.trim(), color: formColor }]);
+        await client.database.from("platforms").insert([{ name: formName.trim(), color: formColor, user_id: user.id }]);
       }
       await fetchPlatforms();
       setAddOpen(false);

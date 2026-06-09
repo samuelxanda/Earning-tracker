@@ -3,6 +3,7 @@
 import { ArrowLeft, Calendar, Clock, DollarSign, FileText, Save } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useAuth } from "@/components/AuthProvider";
 import { createClient } from "@/lib/insforge";
 
 interface PlatformOption {
@@ -12,6 +13,7 @@ interface PlatformOption {
 }
 
 export default function NewEntryPage() {
+  const { user } = useAuth();
   const [platforms, setPlatforms] = useState<PlatformOption[]>([]);
   const [platform, setPlatform] = useState("");
   const [date, setDate] = useState("");
@@ -36,9 +38,11 @@ export default function NewEntryPage() {
     setError(null);
 
     try {
+      if (!user) return;
       const client = createClient();
       await client.database.from("earnings_entries").insert([
         {
+          user_id: user.id,
           platform,
           hours: parseFloat(hours),
           earnings: parseFloat(earnings),

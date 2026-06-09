@@ -21,6 +21,7 @@ interface EarningsEntry {
 export default function TodayPage() {
   const [entries, setEntries] = useState<EarningsEntry[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [todayTotal, setTodayTotal] = useState(0);
   const [todayHours, setTodayHours] = useState(0);
   const today = new Date().toISOString().split("T")[0];
@@ -36,8 +37,8 @@ export default function TodayPage() {
         const todayEntries = data.filter((e: EarningsEntry) => e.date === today);
         setTodayTotal(todayEntries.reduce((s: number, e: EarningsEntry) => s + e.earnings, 0));
         setTodayHours(todayEntries.reduce((s: number, e: EarningsEntry) => s + e.hours, 0));
-      } catch (err: any) {
-        console.error("Failed to fetch entries:", err?.message || err);
+      } catch {
+        setError("Could not load data. Check your connection.");
       } finally {
         setLoading(false);
       }
@@ -71,6 +72,11 @@ export default function TodayPage() {
 
   return (
     <div className="pb-20">
+      {error && (
+        <div className="p-4">
+          <p className="text-sm text-destructive bg-destructive/10 p-3 rounded-lg">{error}</p>
+        </div>
+      )}
       <div className="p-4">
         <div className="flex items-center justify-between mb-4">
           <div>

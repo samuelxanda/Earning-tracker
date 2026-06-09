@@ -1,9 +1,13 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 import { createServerClient } from "@insforge/sdk/ssr";
 
 export async function POST() {
   try {
-    const client = createServerClient();
+    const cookieStore = await cookies();
+    const client = createServerClient({
+      cookies: cookieStore,
+    });
     await client.auth.signOut();
 
     const response = NextResponse.json({ success: true });
