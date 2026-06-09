@@ -2,17 +2,17 @@
 
 import { ArrowLeft, Calendar, Clock, DollarSign, FileText, Save } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createClient } from "@/lib/insforge";
 
-const platforms = [
-  { id: 1, name: "Uber Eats", color: "bg-[#1D9E75]" },
-  { id: 2, name: "DoorDash", color: "bg-blue-500" },
-  { id: 3, name: "Grubhub", color: "bg-orange-500" },
-  { id: 4, name: "Instacart", color: "bg-green-500" },
-];
+interface PlatformOption {
+  id: string;
+  name: string;
+  color: string;
+}
 
 export default function NewEntryPage() {
+  const [platforms, setPlatforms] = useState<PlatformOption[]>([]);
   const [platform, setPlatform] = useState("");
   const [date, setDate] = useState("");
   const [hours, setHours] = useState("");
@@ -20,6 +20,15 @@ export default function NewEntryPage() {
   const [notes, setNotes] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchPlatforms = async () => {
+      const client = createClient();
+      const response = await client.database.from("platforms").select("*").order("name", { ascending: true });
+      setPlatforms(response?.data || []);
+    };
+    fetchPlatforms();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
