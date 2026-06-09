@@ -2,7 +2,6 @@
 
 import { Calendar, Clock, DollarSign, ChevronRight } from "lucide-react";
 import Link from "next/link";
-import { EarningsTabBar } from "../components/EarningsTabBar";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/insforge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -37,7 +36,7 @@ export default function HistoryPage() {
   }, []);
 
   return (
-    <div className="p-4 pb-20">
+    <div className="p-4">
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-xl font-bold text-gray-900">History</h1>
         <Link href="/earnings/entry/new" className="p-2 bg-[#1D9E75] rounded-lg">
@@ -99,7 +98,6 @@ export default function HistoryPage() {
       <Link href="/earnings" className="fixed bottom-20 right-4 bg-[#1D9E75] p-3 rounded-full shadow-lg">
         <Calendar className="w-6 h-6 text-white" />
       </Link>
-      <EarningsTabBar />
     </div>
   );
 }

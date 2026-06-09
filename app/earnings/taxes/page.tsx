@@ -1,7 +1,6 @@
 "use client";
 
 import { Calculator, Download } from "lucide-react";
-import { EarningsTabBar } from "../components/EarningsTabBar";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/insforge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -36,7 +35,7 @@ export default function TaxesPage() {
 
   if (loading) {
     return (
-      <div className="p-4 pb-20">
+      <div className="p-4">
         <Skeleton className="h-7 w-20 mb-4" />
         <Skeleton className="h-24 w-full rounded-xl mb-4" />
         <div className="space-y-3 mb-6">
@@ -45,13 +44,12 @@ export default function TaxesPage() {
         </div>
         <Skeleton className="h-40 w-full rounded-xl" />
         <Skeleton className="h-12 w-full rounded-lg mt-6" />
-        <EarningsTabBar />
       </div>
     );
   }
 
   return (
-    <div className="p-4 pb-20">
+    <div className="p-4">
       <h1 className="text-xl font-bold text-gray-900 mb-4">Taxes</h1>
 
       <div className="bg-white border border-gray-200 rounded-xl p-4 mb-4 shadow-sm">
@@ -92,8 +90,6 @@ export default function TaxesPage() {
         <Download className="w-4 h-4" />
         Export for Tax Pro
       </button>
-
-      <EarningsTabBar />
     </div>
   );
 }

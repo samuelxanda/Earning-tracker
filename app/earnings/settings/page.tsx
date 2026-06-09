@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { User, Wallet, Calculator, Download, Layers } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { EarningsTabBar } from "../components/EarningsTabBar";
 
 const menuItems = [
   { href: "/earnings/settings/profile", label: "Profile", description: "Manage your personal information", icon: User },
@@ -36,7 +35,6 @@ export default function SettingsHubPage() {
           );
         })}
       </div>
-      <EarningsTabBar />
     </div>
   );
 }

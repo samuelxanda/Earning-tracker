@@ -10,28 +10,27 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { EarningsTabBar } from "../../components/EarningsTabBar";
 
 export default function ProfilePage() {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [displayName, setDisplayName] = useState("");
   const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
 
-  const userId = user?.id;
-
   useEffect(() => {
-    if (!userId) return;
+    if (authLoading) return;
+    if (!user?.id) { setLoading(false); return; }
+    const uid = user.id;
     async function loadProfile() {
       try {
         const client = createClient();
         const { data } = await client.database
           .from("profiles")
           .select("*")
-          .eq("user_id", userId)
+          .eq("user_id", uid)
           .maybeSingle();
         if (data) {
           setDisplayName(data.display_name || "");
@@ -44,26 +43,26 @@ export default function ProfilePage() {
       }
     }
     loadProfile();
-  }, [userId]);
+  }, [user, authLoading]);
 
   const handleSave = async () => {
     setSaving(true);
     setMessage("");
-    if (!userId) return;
+    if (!user?.id) return;
     try {
       const client = createClient();
-      const payload = { user_id: userId, display_name: displayName, phone };
+      const payload = { user_id: user.id, display_name: displayName, phone };
       const { data: existing } = await client.database
         .from("profiles")
         .select("id")
-        .eq("user_id", userId)
+        .eq("user_id", user.id)
         .maybeSingle();
 
       if (existing) {
         await client.database
           .from("profiles")
           .update({ display_name: displayName, phone, updated_at: new Date().toISOString() })
-          .eq("user_id", userId);
+          .eq("user_id", user.id);
       } else {
         await client.database.from("profiles").insert([payload]);
       }
@@ -83,7 +82,7 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="p-4 pb-20">
+      <div className="p-4">
         <div className="flex items-center gap-3 mb-6">
           <Link href="/earnings/settings">
             <Button variant="ghost" size="icon"><ArrowLeft className="w-5 h-5" /></Button>
@@ -95,13 +94,12 @@ export default function ProfilePage() {
           <Skeleton className="h-4 w-full" />
           <Skeleton className="h-4 w-2/3" />
         </CardContent></Card>
-        <EarningsTabBar />
       </div>
     );
   }
 
   return (
-    <div className="p-4 pb-20">
+    <div className="p-4">
       <div className="flex items-center gap-3 mb-6">
         <Link href="/earnings/settings">
           <Button variant="ghost" size="icon">
@@ -155,8 +153,6 @@ export default function ProfilePage() {
           </CardContent>
         </Card>
       </div>
-
-      <EarningsTabBar />
     </div>
   );
 }

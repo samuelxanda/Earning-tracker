@@ -9,13 +9,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { EarningsTabBar } from "../../components/EarningsTabBar";
 
 const DEFAULTS = { estimated_tax_rate: 30, mileage_rate: 0.67 };
 
 export default function TaxSettingsPage() {
-  const { user } = useAuth();
-  const userId = user?.id;
+  const { user, loading: authLoading } = useAuth();
   const [taxRate, setTaxRate] = useState(DEFAULTS.estimated_tax_rate);
   const [mileageRate, setMileageRate] = useState(DEFAULTS.mileage_rate);
   const [loading, setLoading] = useState(true);
@@ -23,14 +21,16 @@ export default function TaxSettingsPage() {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    if (!userId) return;
+    if (authLoading) return;
+    if (!user?.id) { setLoading(false); return; }
+    const uid = user.id;
     async function loadSettings() {
       try {
         const client = createClient();
         const { data } = await client.database
           .from("tax_settings")
           .select("*")
-          .eq("user_id", userId)
+          .eq("user_id", uid)
           .maybeSingle();
         if (data) {
           setTaxRate(Number(data.estimated_tax_rate));
@@ -43,7 +43,7 @@ export default function TaxSettingsPage() {
       }
     }
     loadSettings();
-  }, [userId]);
+  }, [user, authLoading]);
 
   const handleSave = async () => {
     if (taxRate < 0 || taxRate > 100) {
@@ -54,27 +54,27 @@ export default function TaxSettingsPage() {
       setMessage("Mileage rate must be positive");
       return;
     }
-    if (!userId) return;
+    if (!user?.id) return;
     setSaving(true);
     setMessage("");
     try {
       const client = createClient();
       const payload = {
-        user_id: userId,
+        user_id: user.id,
         estimated_tax_rate: taxRate,
         mileage_rate: mileageRate,
       };
       const { data: existing } = await client.database
         .from("tax_settings")
         .select("id")
-        .eq("user_id", userId)
+        .eq("user_id", user.id)
         .maybeSingle();
 
       if (existing) {
         await client.database
           .from("tax_settings")
           .update({ estimated_tax_rate: taxRate, mileage_rate: mileageRate, updated_at: new Date().toISOString() })
-          .eq("user_id", userId);
+          .eq("user_id", user.id);
       } else {
         await client.database.from("tax_settings").insert([payload]);
       }
@@ -94,7 +94,7 @@ export default function TaxSettingsPage() {
 
   if (loading) {
     return (
-      <div className="p-4 pb-20">
+      <div className="p-4">
         <div className="flex items-center gap-3 mb-6">
           <Link href="/earnings/settings">
             <Button variant="ghost" size="icon"><ArrowLeft className="w-5 h-5" /></Button>
@@ -105,13 +105,12 @@ export default function TaxSettingsPage() {
           <Skeleton className="h-4 w-full" />
           <Skeleton className="h-4 w-full" />
         </CardContent></Card>
-        <EarningsTabBar />
       </div>
     );
   }
 
   return (
-    <div className="p-4 pb-20">
+    <div className="p-4">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <Link href="/earnings/settings">
@@ -170,8 +169,6 @@ export default function TaxSettingsPage() {
           </Button>
         </CardContent>
       </Card>
-
-      <EarningsTabBar />
     </div>
   );
 }

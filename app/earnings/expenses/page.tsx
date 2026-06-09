@@ -2,7 +2,6 @@
 
 import { Receipt, Plus, ChevronRight } from "lucide-react";
 import Link from "next/link";
-import { EarningsTabBar } from "../components/EarningsTabBar";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/insforge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -37,7 +36,7 @@ export default function ExpensesPage() {
   }, []);
 
   return (
-    <div className="p-4 pb-20">
+    <div className="p-4">
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-xl font-bold text-gray-900">Expenses</h1>
         <Link href="/earnings/expense/new" className="p-2 bg-[#1D9E75] rounded-lg">
@@ -88,8 +87,6 @@ export default function ExpensesPage() {
           )}
         </div>
       )}
-
-      <EarningsTabBar />
     </div>
   );
 }

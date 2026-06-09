@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
-import { EarningsTabBar } from "../../components/EarningsTabBar";
 
 interface Platform {
   id: string;
@@ -34,6 +33,7 @@ export default function PlatformsPage() {
   const [formName, setFormName] = useState("");
   const [formColor, setFormColor] = useState(presetColors[0]);
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
 
   const fetchPlatforms = useCallback(async () => {
     try {
@@ -73,6 +73,7 @@ export default function PlatformsPage() {
   const handleSave = async () => {
     if (!formName.trim() || !user) return;
     setSaving(true);
+    setError("");
     try {
       const client = createClient();
       if (selectedPlatform) {
@@ -84,7 +85,7 @@ export default function PlatformsPage() {
       setAddOpen(false);
       setEditOpen(false);
     } catch (err) {
-      console.error("Failed to save platform:", err);
+      setError("Failed to save platform");
     } finally {
       setSaving(false);
     }
@@ -92,18 +93,19 @@ export default function PlatformsPage() {
 
   const handleDelete = async () => {
     if (!selectedPlatform) return;
+    setError("");
     try {
       const client = createClient();
       await client.database.from("platforms").delete().eq("id", selectedPlatform.id);
       await fetchPlatforms();
       setDeleteOpen(false);
     } catch (err) {
-      console.error("Failed to delete platform:", err);
+      setError("Failed to delete platform");
     }
   };
 
   return (
-    <div className="p-4 pb-20">
+    <div className="p-4">
       <div className="flex items-center gap-3 mb-6">
         <Link href="/earnings/settings">
           <Button variant="ghost" size="icon">
@@ -112,6 +114,8 @@ export default function PlatformsPage() {
         </Link>
         <h1 className="text-xl font-bold text-foreground">Platforms</h1>
       </div>
+
+      {error && <p className="text-sm text-destructive bg-destructive/10 p-3 rounded-lg mb-4">{error}</p>}
 
       <Card>
         <CardContent className="p-4">
@@ -249,8 +253,6 @@ export default function PlatformsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
-      <EarningsTabBar />
     </div>
   );
 }

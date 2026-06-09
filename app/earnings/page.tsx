@@ -2,7 +2,6 @@
 
 import { Plus, Calendar, Bike, Clock } from "lucide-react";
 import Link from "next/link";
-import { EarningsTabBar } from "./components/EarningsTabBar";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/insforge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -30,13 +29,15 @@ export default function TodayPage() {
     const fetchEntries = async () => {
       try {
         const client = createClient();
-        const response = await client.database.from("earnings_entries").select("*").order("created_at", { ascending: false });
-        setEntries(response?.data || []);
-        
+        const response = await client.database
+          .from("earnings_entries")
+          .select("*")
+          .eq("date", today)
+          .order("created_at", { ascending: false });
         const data = response?.data || [];
-        const todayEntries = data.filter((e: EarningsEntry) => e.date === today);
-        setTodayTotal(todayEntries.reduce((s: number, e: EarningsEntry) => s + e.earnings, 0));
-        setTodayHours(todayEntries.reduce((s: number, e: EarningsEntry) => s + e.hours, 0));
+        setEntries(data);
+        setTodayTotal(data.reduce((s: number, e: EarningsEntry) => s + e.earnings, 0));
+        setTodayHours(data.reduce((s: number, e: EarningsEntry) => s + e.hours, 0));
       } catch {
         setError("Could not load data. Check your connection.");
       } finally {
@@ -49,29 +50,26 @@ export default function TodayPage() {
 
   if (loading) {
     return (
-      <div className="pb-20">
-        <div className="p-4">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <Skeleton className="h-8 w-20 mb-1" />
-              <Skeleton className="h-4 w-40" />
-            </div>
-            <Skeleton className="h-10 w-10 rounded-lg" />
+      <div className="p-4">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <Skeleton className="h-8 w-20 mb-1" />
+            <Skeleton className="h-4 w-40" />
           </div>
-          <Skeleton className="h-28 w-full rounded-xl mb-4" />
-          <div className="grid grid-cols-2 gap-3 mb-6">
-            <Skeleton className="h-20 rounded-xl" />
-            <Skeleton className="h-20 rounded-xl" />
-          </div>
-          <Skeleton className="h-36 w-full rounded-xl" />
+          <Skeleton className="h-10 w-10 rounded-lg" />
         </div>
-        <EarningsTabBar />
+        <Skeleton className="h-28 w-full rounded-xl mb-4" />
+        <div className="grid grid-cols-2 gap-3 mb-6">
+          <Skeleton className="h-20 rounded-xl" />
+          <Skeleton className="h-20 rounded-xl" />
+        </div>
+        <Skeleton className="h-36 w-full rounded-xl" />
       </div>
     );
   }
 
   return (
-    <div className="pb-20">
+    <div>
       {error && (
         <div className="p-4">
           <p className="text-sm text-destructive bg-destructive/10 p-3 rounded-lg">{error}</p>
@@ -143,7 +141,6 @@ export default function TodayPage() {
           </CardContent>
         </Card>
       </div>
-      <EarningsTabBar />
     </div>
   );
 }

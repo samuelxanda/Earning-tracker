@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
-import { EarningsTabBar } from "../../components/EarningsTabBar";
 
 interface Platform {
   id: string;
@@ -18,7 +17,7 @@ interface Platform {
 }
 
 export default function ExportPage() {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [platforms, setPlatforms] = useState<Platform[]>([]);
   const [selectedPlatforms, setSelectedPlatforms] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
@@ -30,7 +29,8 @@ export default function ExportPage() {
   const [endDate, setEndDate] = useState(today);
 
   useEffect(() => {
-    if (!user) return;
+    if (authLoading) return;
+    if (!user?.id) { setLoading(false); return; }
     async function loadPlatforms() {
       try {
         const client = createClient();
@@ -48,7 +48,7 @@ export default function ExportPage() {
       }
     }
     loadPlatforms();
-  }, [user]);
+  }, [user, authLoading]);
 
   const togglePlatform = (id: string) => {
     setSelectedPlatforms((prev) => {
@@ -71,7 +71,12 @@ export default function ExportPage() {
         .lte("date", endDate);
 
       if (selectedPlatforms.size > 0) {
-        query = query.in("platform", Array.from(selectedPlatforms));
+        const selectedNames = platforms
+          .filter((p) => selectedPlatforms.has(p.id))
+          .map((p) => p.name);
+        if (selectedNames.length > 0) {
+          query = query.in("platform", selectedNames);
+        }
       }
 
       const { data: entries, error: entriesError } = await query.order("date", { ascending: true });
@@ -135,11 +140,11 @@ export default function ExportPage() {
     } finally {
       setExporting(false);
     }
-  }, [startDate, endDate, selectedPlatforms]);
+  }, [startDate, endDate, selectedPlatforms, platforms]);
 
   if (loading) {
     return (
-      <div className="p-4 pb-20">
+      <div className="p-4">
         <div className="flex items-center gap-3 mb-6">
           <Link href="/earnings/settings">
             <Button variant="ghost" size="icon"><ArrowLeft className="w-5 h-5" /></Button>
@@ -151,13 +156,12 @@ export default function ExportPage() {
           <Skeleton className="h-4 w-full" />
           <Skeleton className="h-10 w-full" />
         </CardContent></Card>
-        <EarningsTabBar />
       </div>
     );
   }
 
   return (
-    <div className="p-4 pb-20">
+    <div className="p-4">
       <div className="flex items-center gap-3 mb-6">
         <Link href="/earnings/settings">
           <Button variant="ghost" size="icon">
@@ -230,15 +234,13 @@ export default function ExportPage() {
           <Button
             onClick={handleExport}
             className="w-full"
-            disabled={exporting || selectedPlatforms.size === 0}
+            disabled={exporting || (platforms.length > 0 && selectedPlatforms.size === 0)}
           >
             <Download className="w-4 h-4" />
             <span>{exporting ? "Exporting..." : "Export to CSV"}</span>
           </Button>
         </CardContent>
       </Card>
-
-      <EarningsTabBar />
     </div>
   );
 }
