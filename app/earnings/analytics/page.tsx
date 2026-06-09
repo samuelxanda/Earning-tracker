@@ -1,9 +1,15 @@
 "use client";
 
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
 import { EarningsTabBar } from "../components/EarningsTabBar";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/insforge";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
 
 interface EarningsEntry {
   id: string;
@@ -58,8 +64,6 @@ export default function AnalyticsPage() {
     };
   });
 
-  const maxEarnings = Math.max(...weeklyData.map((d) => d.earnings), 1);
-
   if (loading) {
     return (
       <div className="p-4 pb-20">
@@ -87,17 +91,41 @@ export default function AnalyticsPage() {
       <div className="bg-white border border-gray-200 rounded-xl p-4 mb-4 shadow-sm">
         <p className="text-gray-600 text-sm mb-3">This Week</p>
         {weeklyData.some((d) => d.earnings > 0) ? (
-          <div className="h-40 flex items-end justify-between gap-2 overflow-hidden">
-            {weeklyData.map((d, i) => (
-              <div key={i} className="flex flex-col items-center flex-1 h-full justify-end">
-                <div
-                  className="w-full bg-[#1D9E75] rounded-t transition-all"
-                  style={{ height: `${(d.earnings / maxEarnings) * 100}%` }}
-                />
-                <span className="text-gray-600 text-xs mt-1">{d.day}</span>
-              </div>
-            ))}
-          </div>
+          <ChartContainer
+            config={{
+              earnings: {
+                label: "Earnings",
+                color: "#1D9E75",
+              },
+            }}
+            className="h-48 w-full"
+          >
+            <BarChart accessibilityLayer data={weeklyData}>
+              <CartesianGrid vertical={false} strokeDasharray="3 3" />
+              <XAxis
+                dataKey="day"
+                tickLine={false}
+                tickMargin={8}
+                axisLine={false}
+              />
+              <YAxis
+                tickLine={false}
+                axisLine={false}
+                tickMargin={8}
+                tickFormatter={(v) => `$${v}`}
+              />
+              <ChartTooltip
+                cursor={{ fill: "rgba(0,0,0,0.04)" }}
+                content={<ChartTooltipContent />}
+              />
+              <Bar
+                dataKey="earnings"
+                fill="var(--color-earnings)"
+                radius={[4, 4, 0, 0]}
+                maxBarSize={40}
+              />
+            </BarChart>
+          </ChartContainer>
         ) : (
           <p className="text-gray-600 text-sm py-8 text-center">
             No entries this week yet
