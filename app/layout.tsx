@@ -4,7 +4,7 @@ import { Geist } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { AuthProvider } from "@/components/AuthProvider";
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
   title: "Moto Rider Earnings Tracker",
@@ -18,7 +18,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={cn("font-sans", geist.variable)}>
-      <body className="min-h-screen bg-gray-50 font-sans">
+      <body className="min-h-screen bg-gray-50 font-sans antialiased">
         <AuthProvider>
           <main className="min-h-screen">{children}</main>
         </AuthProvider>

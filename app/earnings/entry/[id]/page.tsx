@@ -60,7 +60,7 @@ export default function EntryDetailPage() {
 
   if (loading) {
     return (
-      <div className="p-4 pb-20">
+      <div className="p-4">
         <p className="text-muted-foreground">Loading...</p>
       </div>
     );
@@ -68,7 +68,7 @@ export default function EntryDetailPage() {
 
   if (error || !entry) {
     return (
-      <div className="p-4 pb-20">
+      <div className="p-4">
         <div className="flex items-center gap-3 mb-6">
           <Link href="/earnings/history" className="p-2">
             <ArrowLeft className="w-5 h-5 text-foreground" />
@@ -81,7 +81,7 @@ export default function EntryDetailPage() {
   }
 
   return (
-    <div className="p-4 pb-20">
+    <div className="p-4">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <Link href="/earnings/history" className="p-2">

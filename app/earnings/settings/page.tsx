@@ -13,7 +13,7 @@ const menuItems = [
 
 export default function SettingsHubPage() {
   return (
-    <div className="p-4 pb-20">
+    <div className="p-4">
       <h1 className="text-xl font-bold text-foreground mb-4">Settings</h1>
       <div className="space-y-3">
         {menuItems.map((item) => {
