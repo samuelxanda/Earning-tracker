@@ -1,0 +1,46 @@
+
+# InsForge & AI agent skills
+.insforge
+.agent
+.agents
+.augment
+.claude
+.cline
+.github/copilot*
+.kilocode
+.qoder
+.qwen
+.roo
+.trae
+.windsurf
+
+# Dependencies
+node_modules/
+
+# Next.js
+.next/
+.next/
+
+# Build outputs
+dist/
+coverage/
+
+# Environment
+.env*.local
+
+# IDE
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Memory/context files
+memory.md
+earnings-tracker.md
+
+# Temp files
+*.tsbuildinfo
