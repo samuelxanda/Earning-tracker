@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Platform {
   id: string;
@@ -115,7 +116,20 @@ export default function SettingsPage() {
         <CardContent>
           <p className="text-foreground font-medium mb-3">Platforms</p>
           {loading ? (
-            <p className="text-muted-foreground text-sm">Loading...</p>
+            <div className="space-y-2">
+              {[1,2,3,4].map((i) => (
+                <div key={i} className="flex items-center justify-between p-3 bg-muted rounded-lg border border-border">
+                  <div className="flex items-center gap-3">
+                    <Skeleton className="h-4 w-4 rounded-full" />
+                    <Skeleton className="h-4 w-24" />
+                  </div>
+                  <div className="flex gap-1">
+                    <Skeleton className="h-8 w-8 rounded-md" />
+                    <Skeleton className="h-8 w-8 rounded-md" />
+                  </div>
+                </div>
+              ))}
+            </div>
           ) : platforms.length === 0 ? (
             <p className="text-muted-foreground text-sm py-4 text-center">
               No platforms yet. Add your first one.

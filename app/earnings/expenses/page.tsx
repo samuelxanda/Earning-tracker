@@ -5,6 +5,7 @@ import Link from "next/link";
 import { EarningsTabBar } from "../components/EarningsTabBar";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/insforge";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Expense {
   id: string;
@@ -50,7 +51,20 @@ export default function ExpensesPage() {
       </div>
 
       {loading ? (
-        <p className="text-gray-600">Loading...</p>
+        <div className="space-y-3">
+          {[1,2,3,4].map((i) => (
+            <div key={i} className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+              <div className="flex items-center justify-between">
+                <div>
+                  <Skeleton className="h-5 w-32 mb-1" />
+                  <Skeleton className="h-4 w-24" />
+                </div>
+                <Skeleton className="h-5 w-5" />
+              </div>
+              <Skeleton className="h-5 w-20 mt-2" />
+            </div>
+          ))}
+        </div>
       ) : (
         <div className="space-y-3">
           {expenses.map((expense) => (

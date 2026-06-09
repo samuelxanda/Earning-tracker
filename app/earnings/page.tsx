@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/insforge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface EarningsEntry {
   id: string;
@@ -49,7 +50,19 @@ export default function TodayPage() {
     return (
       <div className="pb-20">
         <div className="p-4">
-          <p className="text-muted-foreground">Loading...</p>
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <Skeleton className="h-8 w-20 mb-1" />
+              <Skeleton className="h-4 w-40" />
+            </div>
+            <Skeleton className="h-10 w-10 rounded-lg" />
+          </div>
+          <Skeleton className="h-28 w-full rounded-xl mb-4" />
+          <div className="grid grid-cols-2 gap-3 mb-6">
+            <Skeleton className="h-20 rounded-xl" />
+            <Skeleton className="h-20 rounded-xl" />
+          </div>
+          <Skeleton className="h-36 w-full rounded-xl" />
         </div>
         <EarningsTabBar />
       </div>

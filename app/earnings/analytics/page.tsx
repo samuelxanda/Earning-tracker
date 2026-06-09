@@ -3,6 +3,7 @@
 import { EarningsTabBar } from "../components/EarningsTabBar";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/insforge";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface EarningsEntry {
   id: string;
@@ -48,8 +49,13 @@ export default function AnalyticsPage() {
   if (loading) {
     return (
       <div className="p-4 pb-20">
-        <h1 className="text-xl font-bold text-gray-900 mb-4">Analytics</h1>
-        <p className="text-gray-600">Loading...</p>
+        <Skeleton className="h-7 w-28 mb-4" />
+        <Skeleton className="h-24 w-full rounded-xl mb-4" />
+        <Skeleton className="h-52 w-full rounded-xl mb-4" />
+        <div className="grid grid-cols-2 gap-3">
+          <Skeleton className="h-20 rounded-xl" />
+          <Skeleton className="h-20 rounded-xl" />
+        </div>
         <EarningsTabBar />
       </div>
     );
